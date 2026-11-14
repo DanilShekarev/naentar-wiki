@@ -20,8 +20,10 @@ if (-not (Test-Path $VaultPath)) {
 
 Write-Host "Mirroring $VaultPath -> $ContentPath ..." -ForegroundColor Cyan
 
-# /MIR = mirror (purges stale files in content). Skip VCS/Obsidian metadata.
-robocopy $VaultPath $ContentPath /MIR /XD ".git" ".obsidian" /XF ".gitattributes" /NFL /NDL /NJH /NJS /NP | Out-Null
+# /MIR = mirror (purges stale files in content). Skip VCS/Obsidian metadata
+# and graft's local code index (graft/ plus its .gitignore/.ignore), which is
+# not part of the notes and must never be published.
+robocopy $VaultPath $ContentPath /MIR /XD ".git" ".obsidian" "graft" /XF ".gitattributes" ".gitignore" ".ignore" /NFL /NDL /NJH /NJS /NP | Out-Null
 
 # robocopy: exit codes 0-7 = success, >=8 = failure
 if ($LASTEXITCODE -ge 8) {
